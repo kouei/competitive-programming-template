@@ -1,0 +1,1 @@
+clang++ -std=c++17 -Wshadow -Wall -o main main.cpp -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG -g
