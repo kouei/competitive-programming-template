@@ -18,3 +18,4 @@ Some Ideas are borrowed from https://github.com/Errichto/youtube/tree/master/tes
 4. Implement your brute-force version program in **b.cpp**.
 5. Use `$ ./build-test.sh` to build **gen**, **a** and **b**.
 6. Use `$ ./run-test.sh` to test **a** against **b**.
+7. When a test failed, you can check **gen-input.txt** which makes **a** and **b** output different results.
