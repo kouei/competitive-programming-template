@@ -19,3 +19,10 @@ Some Ideas are borrowed from https://github.com/Errichto/youtube/tree/master/tes
 5. Use `$ ./build-test.sh` to build **gen**, **a** and **b**.
 6. Use `$ ./run-test.sh` to test **a** against **b**.
 7. When a test failed, you can check **gen-input.txt** which makes **a** and **b** output different results.
+
+# Tips
+Whenever you solved an algorithm problem and before you turn to another problem, you can enter:  
+  
+`$ git reset --hard`  
+  
+to reset the template.  
