@@ -7,8 +7,8 @@ int main() {
     for(auto tc = 1; tc <= T; ++tc) {
 
         
-
-        printf("Case #%d: ", tc);
+        
+        cout << "Case #" << tc << ": ";
     }
     return 0;
 }
