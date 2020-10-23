@@ -2,12 +2,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int rand(int a, int b) {
-    return a + rand() % (b - a + 1);
+std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
+
+int rand(int start, int end) {
+    std::uniform_int_distribution<int> distribution(start, end);
+    return distribution(generator);
 }
 
 int main(int argc, char* argv[]) {
-    srand(atoi(argv[1])); // atoi(s) converts an array of chars to int
     int n = rand(2, 30);
     printf("%d\n", n);
     set<int> used;
