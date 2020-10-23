@@ -13,16 +13,17 @@ Some Ideas are borrowed from https://github.com/Errichto/youtube/tree/master/tes
 # Testing
 
 1. `$ cd test`.
-2. Implement your input data generator in **gen.cpp**.
-3. Implement your clever version program in **a.cpp**.
-4. Implement your brute-force version program in **b.cpp**.
-5. Use `$ ./build-test.sh` to build **gen**, **a** and **b**.
-6. Use `$ ./run-test.sh` to test **a** against **b**.
-7. When a test failed, you can check **gen-input.txt** which makes **a** and **b** output different results.
+2. Implement your input data generator in **step0-gen.cpp**.
+3. Implement your slow (but absolutely correct) algorithm in **step1-slow.cpp**.
+4. Implement your fast (but incorrect) algorithm in **step2-fast.cpp**.
+5. Use `$ ./build-test.sh` to build **out0-gen**, **out1-slow** and **out2-fast**.
+6. Use `$ ./run-test.sh` to test **out1-slow** against **out2-fast**.
+7. When a test failed, you can check **gen-input.txt** which makes **out1-slow** and **out2-fast** output different results.
 
 # Tips
 Whenever you solved an algorithm problem and before you turn to another problem, you can enter:  
   
 `$ git reset --hard`  
+`$ git clean -dfx`  
   
 to reset the template.  

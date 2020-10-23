@@ -16,7 +16,7 @@ int main() {
             }
         }
         if(count_smaller == 1) {
-            cout << x;
+            cout << x << "\n";
             return 0;
         }
     }
