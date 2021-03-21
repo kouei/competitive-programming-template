@@ -1,0 +1,1 @@
+g++ -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o main main.cpp
