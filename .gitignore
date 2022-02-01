@@ -1,2 +1,3 @@
-input.txt
-main
+bin/
+test/bin/*
+test/out/*

@@ -1,1 +1,2 @@
-./main < input.txt
+#!/bin/bash
+bin/main < src/input.txt
