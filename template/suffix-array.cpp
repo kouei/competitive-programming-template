@@ -219,15 +219,10 @@ void computeS12(vector<int> & s12, vector<int> & SA12, int n12, int K12)
         // So we have K12 < n12 now. (Which means there are duplicate characters in S12)
         makeSuffixArray(s12, SA12, n12, K12);
 
-        // 如何理解下面这个for循环：
-        // 可以思考一个问题：假如已知某个字符串的后缀数组，能否倒推原始字符串？
-        // 直觉告诉你肯定不行，那如果再限定这个字符串里的每个字符都各不相同呢？
-        // 此时，假如后缀数组的第0号元素是7，
-        // 那么意味着字典序排名第1的后缀开始于下标7，于是我们可以确定原字符串下标7位置的那个字符一定是1（相当于0+1）
-        // 那如果后缀数组的第1号元素是3呢？于是我们可以断定原字符串下标3位置的那个字符一定是2（相当于1+1）
-        // 为什么要做这一步？是为了后面computeS0更方便
-        // 这样处理之后，相当于每个后缀都起始于一个独一无二的字符，那如果我们想比较这些后缀的相对大小只需要比较它们的首字母即可
-        // store unique names in s12 using the suffix array
+        // In the following for loop,
+        // we imagine that every tri-character in s12 is unique.
+        // Hence, we can set unique names to each tri-character in s12 based on SA12.
+        // This will make comparison of suffixes in the merge step easier.
         for (int i = 0; i < n12; ++i) {
             s12[SA12[i]] = i + 1;
         }
