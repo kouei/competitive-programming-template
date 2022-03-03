@@ -8,46 +8,85 @@ static int _ = [](){
     return 0;
 }();
 
-/// <summary>
-/// Create suffix array for str using SA-IS algorithm.
-/// </summary>
-/// <param name="s">Input string, each character is represented as a number in {1..K}. </param>
-/// <param name="sa">An existing array to place the suffix array.</param>
-/// <param name="K">Maximum character in the dictionary of str. The dictionary is represented as {1..K}.</param>
-void createSuffixArray(vector<int> & s, vector<int> & sa, int K) {
-    int n = s.size();
-    s.push_back(0); // Add the smallest character in dictionary to the end of string.
+const int S_TYPE = 0;
+const int L_TYPE = 1;
 
-    const int S_TYPE = 0;
-    const int L_TYPE = 1;
-    vector<int> t(n + 1);
+vector<int> buildTypeMap(const string & data) {
+    // Builds a map marking each suffix of the data as S_TYPE or L_TYPE.
 
-    t[n] = S_TYPE;
-    for(int i = n - 1; i >= 0; --i) {
-        if(s[i] < s[i + 1]) {
-            t[i] = S_TYPE;
-        } else if(s[i] > s[i + 1]) {
-            t[i] = L_TYPE;
+    // The map should contain one more entry than there are characters
+    // in the string, because we also need to store the type of the
+    // empty suffix between the last character and the end of the
+    // string.
+    vector<int> res(data.size() + 1);
+    int n = res.size();
+
+    // The empty suffix after the last character is S_TYPE
+    res[n - 1] = S_TYPE;
+
+    // If this is an empty string...
+    if(data.empty()) {
+        // ...there are no more characters, so we're done.
+        return res;
+    }
+
+    // The suffix containing only the last character must necessarily
+    // be larger than the empty suffix.
+    res[n - 2] = L_TYPE;
+
+    // Step through the rest of the string from right to left.
+    for(int i = n - 3; i >= 0; --i) {
+        if(data[i] > data[i + 1]) {
+            res[i] = L_TYPE;
+        } else if(data[i] < data[i + 1]) {
+            res[i] = S_TYPE;
         } else {
-            t[i] = t[i + 1];
+            res[i] = res[i + 1];
         }
     }
 
-    vector<int> p1;
-    p1.reserve(n + 1);
+    return res;
+}
 
-    for(int i = 1; i < n; ++i) {
-        if(t[i] == S_TYPE && t[i - 1] == L_TYPE) {
-            p1.push_back(i);
-        }
+bool isLMSChar(int offset, const vector<int> & typemap) {
+    // Returns true if the character at offset is a left-most S-type.
+    return offset > 0 &&
+           typemap[offset] == S_TYPE &&
+           typemap[offset - 1] == L_TYPE;
+}
+
+bool lmsSubstringsAreEqual(const string & str, const vector<int> & typemap, int offsetA, int offsetB) {
+    // Return True if LMS substrings at offsetA and offsetB are equal.
+    // No other substring is equal to the empty suffix.
+    if(offsetA == str.size() || offsetB == str.size()) {
+        return false;
     }
-    p1.push_back(n);
 
-    vector<int> l_count_for_each_bucket(K + 1);
-    for(int i = 0; i < n + 1; ++i) {
-        if(t[i] == L_TYPE) {
-            l_count_for_each_bucket[s[i]] += 1;
+    int i = 0;
+    while(true) {
+        bool aIsLMS = isLMSChar(i + offsetA, typemap);
+        bool bIsLMS = isLMSChar(i + offsetB, typemap);
+
+        // If we've found the start of the next LMS substrings...
+        if(i > 0 && aIsLMS && bIsLMS) {
+            // ...then we made it all the way through our original LMS
+            // substrings without finding a difference, so we can go
+            // home now.
+            return true;
         }
+
+        if(aIsLMS != bIsLMS) {
+            // We found the end of one LMS substring before we reached
+            // the end of the other.
+            return false;
+        }
+
+        if(str[i + offsetA] != str[i + offsetB]) {
+            // We found a character difference, we're done.
+            return false;
+        }
+
+        i += 1;
     }
 }
 
