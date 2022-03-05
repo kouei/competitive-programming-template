@@ -24,7 +24,8 @@ void induceSortS(const vector<int> & str, vector<int> & guessedSuffixArray, cons
 tuple<vector<int>, int, vector<int>> summariseSuffixArray(const vector<int> & str, const vector<int> & guessedSuffixArray, const vector<int> & typemap);
 vector<int> makeSummarySuffixArray(const vector<int> & summaryString, int summaryAlphabetSize);
 vector<int> accurateLMSSort(const vector<int> str, const vector<int> & bucketSizes, const vector<int> & typemap, const vector<int> & summarySuffixArray, const vector<int> & summarySuffixOffsets);
-vector<int> encode(const string & s);
+void makeLCPArray(vector<int> &s, const vector<int> &sa, vector<int> &LCP);
+void createSuffixArray(const string & str, vector<int> & sa, vector<int> & LCP);
 
 vector<int> buildTypeMap(const vector<int> & data) {
     // Builds a map marking each suffix of the data as S_TYPE or L_TYPE.
@@ -389,30 +390,122 @@ vector<int> accurateLMSSort(const vector<int> str, const vector<int> & bucketSiz
     return suffixOffsets;
 }
 
-void createSuffixArray(const string & str, vector<int> & sa, vector<int> & LCP) {
-    vector<int> encoded_str(str.size());
-    for(int i = 0; i < str.size(); ++i) {
-        encoded_str[i] = str[i];
+void makeLCPArray(vector<int> &s, const vector<int> &sa, vector<int> &LCP) {
+    int N = sa.size();
+    vector<int> rank(N);
+
+    for (int i = 0; i < N; ++i) {
+        rank[sa[i]] = i; // rank[sa[i]] means the rank of the suffix starting at sa[i].
     }
+
+    int h = 0; // current length of common prefix.
+    for (int i = 0; i < N; ++i) {
+        if (rank[i] > 0) {
+            int j = sa[rank[i] - 1]; // starting index of the suffix that has rank[i] - 1.
+
+            // Compute common prefix length of the suffix which has rank[i] and the suffix which has rank[i] - 1.
+            while (max(i, j) + h < N && s[i + h] == s[j + h]) {
+                ++h;
+            }
+
+            LCP[rank[i]] = h;
+            if (h > 0) {
+                 // when we enter the next loop, we are actually skipping 1 character at the beginning (which is already matched).
+                 // Hence we minus 1 from h.
+                --h;
+            }
+        }
+    }
+}
+
+void createSuffixArray(const string & str, vector<int> & sa, vector<int> & LCP) {
+    vector<int> encoded_str(str.begin(), str.end());
     vector<int> sa_internal = makeSuffixArrayByInducedSorting(encoded_str, 256);
     for(int i = 1; i < sa_internal.size(); ++i) {
         sa[i - 1] = sa_internal[i];
     }
+    
+    makeLCPArray(encoded_str, sa, LCP);
 }
 
+int find_pos(int sa_index, vector<int> & end_index) {
+    for(int j = 0; j < end_index.size(); ++j) {
+        if(sa_index < end_index[j]) {
+            return j;
+        }
+    }
+    return -1;
+}
 
 int main() {
     string str;
-    cin >> str;
-    cout << str << "\n";
+    str.reserve(10 * 100000 + 100);
+    string s;
+    vector<int> end_index;
 
-    vector<int> sa(str.size());
-    vector<int> LCP(str.size());
-    
-    createSuffixArray(str, sa, LCP);
-    
-    for(int i = 0; i < sa.size(); ++i) {
-        cout << sa[i] << "\t" << str.substr(sa[i]) << "\n";
+    while (cin >> s) {
+        if(!str.empty()) {
+            str += '#';
+        }
+        str += s;
+        end_index.push_back(str.size());
     }
+
+    if(end_index.size() < 2) {
+        cout << 0 << "\n";
+        return 0;
+    }
+
+    int n = str.size();
+    vector<int> sa(n);
+    vector<int> LCP(n);
+    createSuffixArray(str, sa, LCP);
+
+    // cout << "String: " << str << "\n\n";
+    // cout << "Index" << "\t" << "Str" << "\t" << "LCP" << "\t" << "Suffix" << "\n";
+    // for(int i = 0; i < n; ++i) {
+    //     cout << i << "\t" << find_pos(sa[i], end_index) << "\t" << LCP[i] << "\t" << str.substr(sa[i]) << "\n";
+    // }
+
+    int m = end_index.size();
+
+    vector<int> mask_count(m);
+    int mask = 0;
+
+    int j = n - 1;
+    int res = 0;
+    for(int i = n - 1; i >= 0; --i) {
+        int suffix_i_belong = find_pos(sa[i], end_index);
+        mask_count[suffix_i_belong] += 1;
+        mask |= 1 << suffix_i_belong;
+
+        if(mask == (1 << m) - 1) {
+            while(j >= i) {
+                int suffix_j_belong = find_pos(sa[j], end_index);
+                if(mask_count[suffix_j_belong] > 1) {
+                    mask_count[suffix_j_belong] -= 1;
+                    --j;
+                } else {
+                    break;
+                }
+            }
+
+            // cout << i << " " << j << "\n";
+
+            int cur_lcp = INT_MAX;
+            for(int k = j; k > i; --k) {
+                cur_lcp = min(cur_lcp, LCP[k]);
+            }
+            res = max(res, cur_lcp);
+
+            int suffix_j_belong = find_pos(sa[j], end_index);
+            mask_count[suffix_j_belong] -= 1;
+            mask &= ~(1 << suffix_j_belong);
+            --j;
+        }
+    }
+
+    cout << res << "\n";
+
     return 0;
 }
