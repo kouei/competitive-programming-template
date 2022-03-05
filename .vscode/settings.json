@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "scoped_allocator": "cpp",
+        "regex": "cpp",
+        "typeindex": "cpp",
+        "typeinfo": "cpp",
+        "random": "cpp",
+        "array": "cpp",
+        "tuple": "cpp"
+    }
+}
