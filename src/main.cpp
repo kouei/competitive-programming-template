@@ -389,38 +389,30 @@ vector<int> accurateLMSSort(const vector<int> str, const vector<int> & bucketSiz
     return suffixOffsets;
 }
 
-void removeTheEmptySuffix(vector<int> & sa) {
-    for(int i = 1; i < sa.size(); ++i) {
-        sa[i - 1] = sa[i];
+void createSuffixArray(const string & str, vector<int> & sa, vector<int> & LCP) {
+    vector<int> encoded_str(str.size());
+    for(int i = 0; i < str.size(); ++i) {
+        encoded_str[i] = str[i];
     }
-    sa.pop_back();
-}
-
-vector<int> encode(const string & s) {
-    vector<int> res(s.size());
-    for(int i = 0; i < s.size(); ++i) {
-        res[i] = s[i] - 'A' + 1;
+    vector<int> sa_internal = makeSuffixArrayByInducedSorting(encoded_str, 256);
+    for(int i = 1; i < sa_internal.size(); ++i) {
+        sa[i - 1] = sa_internal[i];
     }
-    return res;
 }
 
 
 int main() {
-    string s;
-    cin >> s;
-    cout << s << "\n";
+    string str;
+    cin >> str;
+    cout << str << "\n";
 
-    vector<int> encoded_s = encode(s);
-    for(int i : encoded_s) {
-        cout << i << " ";
-    }
-    cout << "\n";
+    vector<int> sa(str.size());
+    vector<int> LCP(str.size());
     
-    vector<int> sa = makeSuffixArrayByInducedSorting(encoded_s, 27);
-    removeTheEmptySuffix(sa);
+    createSuffixArray(str, sa, LCP);
     
     for(int i = 0; i < sa.size(); ++i) {
-        cout << sa[i] << "\t" << s.substr(sa[i]) << "\n";
+        cout << sa[i] << "\t" << str.substr(sa[i]) << "\n";
     }
     return 0;
 }
