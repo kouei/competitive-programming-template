@@ -1,0 +1,226 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N = 10 * 100000 + 100;
+
+int str_len;
+char str[N];
+int str_int[N << 1];
+
+int sa_buffer[N];
+int type_buffer[N << 1];
+int lms_buffer[N];
+int cnt[N];
+int tail[N];
+int rk[N];
+int LCP_buffer[N];
+//sa表示后缀数组，
+//s表示转化为整数后的字符串数组，
+//tp表示类型数组，
+//lms表示LMS字符位置数组，
+//cnt表示诱导排序中的桶数组，
+//tail表示字符集中第i种字符的S型后缀和L型后缀的开始位置，s数组的额外空间用来存放重命名后的*型后缀，也用于递归，tp数组与s数组对应
+void inducedsort(int n, int dict_size, int n1, int * s, int * type, int * v) { //实际上还是以基数排序为主体进行实现
+    fill_n(sa_buffer, n, -1); //初始化sa数组
+    fill_n(cnt, dict_size, 0); //初始化桶
+    for(int i = 0; i < n; ++i) {
+        cnt[s[i]] += 1; //将字符放入对应的桶
+    }
+    
+    for(int i = 1; i < dict_size; ++i) {
+        cnt[i] += cnt[i - 1]; //前缀和求前i种字符的总数量
+    }
+
+    for(int i = 0; i < dict_size; ++i) {
+        tail[i] = cnt[i] - 1; //S型后缀倒序存放，故字符集中第i种字符且为S型的开始位置为第i种字符的最后一位，*型后缀也是S型后缀
+    }
+    
+    for(int i = n1 - 1; i>=0; --i) {
+        sa_buffer[tail[s[v[i]]]--] = v[i]; //倒序存放*型后缀在原字符串中的位置
+    }
+    
+    
+    for(int i = 1; i < dict_size; ++i) {
+        tail[i] = cnt[i - 1];   //L型后缀正序存放，故字符集中第i种字符且为L型的开始位置为第i种字符的第一位
+    }
+
+    for(int i = 0; i < n; ++i) {
+        if(sa_buffer[i] > 0 && type[sa_buffer[i] - 1]) {
+            sa_buffer[tail[s[sa_buffer[i] - 1]]++] = sa_buffer[i] - 1; //利用*型后缀的信息诱导正序存放L型后缀在原字符串中的位置
+        }
+    }
+    for(int i = 0; i < dict_size; ++i) {
+        tail[i] = cnt[i] - 1; //S型后缀倒序存放，故字符集中第i种字符且为S型的开始位置为第i种字符的最后一位
+    }
+
+    for(int i = n - 1; i >= 0; --i) {
+        if(sa_buffer[i] > 0 && !type[sa_buffer[i] - 1]) {
+            sa_buffer[tail[s[sa_buffer[i] - 1]]--] = sa_buffer[i] - 1; //利用已有信息诱导逆序存放S型后缀（包括*型后缀）在原字符串中的位置
+        }
+    }
+}
+
+void sais(int n, int dict_size, int * s, int * type, int * lms) { //SA-IS算法构造后缀数组
+    int n1 = 0;
+
+    int ch = -1;
+    rk[0] = -1;
+
+    int * s1 = s + n; //n1为LMS字符的数量，ch为重命名后的不同的LMS子串的数目减一，同时也作为该LMS子串的新名字，s1储存重命名后的LMS子串
+    
+    type[n - 1] = 0;
+    for(int i = n - 2; i >= 0; --i) {
+        type[i] = s[i] == s[i + 1] ? type[i + 1] : s[i] > s[i + 1]; //倒序判断后缀类型，1为L型后缀，0为S型后缀
+    }
+
+    for(int i = 1; i < n; ++i) {
+        rk[i] = type[i - 1] && !type[i] ? (lms[n1] = i, ++n1) : -1;//rk数组在这里并不是通常意义下的排名数组，这里只是为了少开一个数组利用了在排序过程中
+    }
+
+    inducedsort(n, dict_size, n1, s, type, lms);//先粗略处理出*型后缀的后缀数组  //不会用到的rk数组，这里记录的是第i个字符是不是LMS字符，如果是，
+
+    for(int i = 0; i < n; ++i) { //存下他是第n1（自加之前的n1）个，且将这个字符在原字符串的位置存到lms数组中；如果不是则置为-1。
+        int x = rk[sa_buffer[i]];
+        int y = 0; //利用处理出的*型后缀的后缀数组对*型后缀重命名，通过rk数组可以得到第i个字符是不是LMS字符，是的话是第几个，方便在lms数组中找到
+        if(x != -1) {
+            if(ch < 1 || (lms[x + 1] - lms[x] != lms[y + 1] - lms[y])) {
+                ch++;  //如果一个LMS子串都还没有或者和前一个LMS子串长度不同则明显不相同，直接LMS子串数目加一
+            } else {
+                for(int j = lms[x], k = lms[y]; j <= lms[x + 1]; j++, k++) {
+                    if((s[j] << 1 | type[j]) != (s[k] <<1 | type[k])) {//比较每一位字符值和类型是否都相同。字符值左移一位后和类型值或，类型值相同
+                        ch++; //则最后一位相同，字符值相同则前面那些位相同，都相同最后结果才相同（花里胡哨）
+                        break;
+                    }
+                }
+            }
+            s1[y = x] = ch; //rk数组代表了该LMS字符是第几个，故能按照顺序将重命名的LMS子串放入s1中。同时该句也把当前的LMS字符位置赋给y方便下个循环的比较
+        }
+    }
+    if(ch + 1 < n1) {
+        sais(n1, ch + 1, s1, type + n, lms + n1); //如果满足这个数量关系说明有重复的LMS子串，需要递归处理
+    } else {
+        for(int i = 0; i < n1; i++) { //如果没有重复的就继续处理出新字符串数组s1的后缀数组
+            sa_buffer[s1[i]] = i;    //这里sa数组只是用来储存每个新名字对应原字符串中的第几个LMS子串（也可以理解是第几个LMS字符）
+        }
+    }
+    
+    for(int i = 0; i < n1; i++) {
+        s1[i] = lms[sa_buffer[i]];   //求每个新名字在原串中的位置，得到的就是sa1数组
+    }
+
+    inducedsort(n, dict_size, n1, s, type, s1);    //利用sa1数组诱导排序求sa数组
+}
+
+void get_height() {
+    for(int i = 0; i < str_len; i++) {
+        rk[sa_buffer[i]] = i;
+    }
+
+    for(int i = 0, k = LCP_buffer[0] = 0; i < str_len - 1; i++) {
+        int j = sa_buffer[rk[i] - 1];
+        while(i + k < str_len && j + k < str_len && str_int[i + k] == str_int[j + k]) {
+            k++;
+        }
+        
+        LCP_buffer[rk[i]] = k;
+        if(k > 0) {
+            k--;
+        }
+    }
+}
+
+int end_index[20];
+int end_index_len;
+
+int find_pos(int sa_index) {
+    for(int j = 0; j < end_index_len; ++j) {
+        if(sa_index < end_index[j]) {
+            return j;
+        }
+    }
+    return -1;
+}
+
+int main() {
+
+    while(true) {
+        int ch = getchar();
+        if(ch == EOF) {
+            break;
+        } else if(ch == '\n') {
+            end_index[end_index_len++] = str_len;
+            str[str_len++] = '#';
+        } else {
+            str[str_len++] = ch;
+        }
+    }
+
+    if(end_index_len < 2) {
+        printf("0\n");
+        return 0;
+    }
+
+    if(str_len > 0 && str[str_len - 1] == '#') {
+        str_len -= 1;
+    }
+
+    for(int i = 0; i < str_len; i++) {
+        if(str[i] == '#') {
+            str_int[i] = 1;
+        } else {
+            str_int[i] = str[i] - 'a' + 2; //将字符串转化为整数形式
+        }
+    }
+    str_int[str_len++] = 0;
+    int dict_size = 28;
+
+    sais(str_len, dict_size, str_int, type_buffer, lms_buffer);
+    get_height();
+
+    int * sa = &sa_buffer[1];
+    int * LCP = &LCP_buffer[1];
+
+    str_len -= 1;
+
+    int m = end_index_len;
+
+    vector<int> mask_count(m);
+    int mask = 0;
+
+    int j = str_len - 1;
+    int res = 0;
+    for(int i = str_len - 1; i >= 0; --i) {
+        int suffix_i_belong = find_pos(sa[i]);
+        mask_count[suffix_i_belong] += 1;
+        mask |= 1 << suffix_i_belong;
+
+        if(mask == (1 << m) - 1) {
+            while(j >= i) {
+                int suffix_j_belong = find_pos(sa[j]);
+                if(mask_count[suffix_j_belong] > 1) {
+                    mask_count[suffix_j_belong] -= 1;
+                    --j;
+                } else {
+                    break;
+                }
+            }
+
+            // cout << i << " " << j << "\n";
+
+            int cur_lcp = INT_MAX;
+            for(int k = j; k > i; --k) {
+                cur_lcp = min(cur_lcp, LCP[k]);
+            }
+            res = max(res, cur_lcp);
+
+            int suffix_j_belong = find_pos(sa[j]);
+            mask_count[suffix_j_belong] -= 1;
+            mask &= ~(1 << suffix_j_belong);
+            --j;
+        }
+    }
+
+    cout << res << "\n";
+
+    return 0;
+}
