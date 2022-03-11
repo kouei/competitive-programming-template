@@ -2,94 +2,108 @@
 
 using namespace std;
 
-static int _ = [](){
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    return 0;
-}();
+const int N = 2000010; // Must be at least twice as long as the orginal string.
 
-const int N = 2000010; // twice as long as the orginal string.
+/**************** Suffix Automaton Fields Begin ****************/
 
-struct Node {
-    int maxlen; // max substring len of this state.
-    int parent; // link to parent node (aka. suffix link).
-    int child[26]; // child pointers.
-};
-Node nodes[N];
-int nodes_top = 1;
-int last = 1;
+int nodes_top = 1;  // Current max node index.
+int last = 1;       // Last extended node.
 
-int64_t f[N];
+int maxlen[N];      // Max length of substrings recorded in this state (node).
+int parent[N];      // Points to parent node (aka. suffix link).
+int child[N][26];   // Assume only lower case letters.
 
+/***************** Suffix Automaton Fields End *****************/
+
+/**************** Suffix Automaton Construction Begin ****************/
+
+// Macro to accelerate child array copy
+#define copy_child(child_a,child_b) { \
+    int * ptr_a = (child_a); \
+    int * ptr_b = (child_b); \
+    ptr_a[0] =  ptr_b[0] ; \
+    ptr_a[1] =  ptr_b[1] ; \
+    ptr_a[2] =  ptr_b[2] ; \
+    ptr_a[3] =  ptr_b[3] ; \
+    ptr_a[4] =  ptr_b[4] ; \
+    ptr_a[5] =  ptr_b[5] ; \
+    ptr_a[6] =  ptr_b[6] ; \
+    ptr_a[7] =  ptr_b[7] ; \
+    ptr_a[8] =  ptr_b[8] ; \
+    ptr_a[9] =  ptr_b[9] ; \
+    ptr_a[10] = ptr_b[10]; \
+    ptr_a[11] = ptr_b[11]; \
+    ptr_a[12] = ptr_b[12]; \
+    ptr_a[13] = ptr_b[13]; \
+    ptr_a[14] = ptr_b[14]; \
+    ptr_a[15] = ptr_b[15]; \
+    ptr_a[16] = ptr_b[16]; \
+    ptr_a[17] = ptr_b[17]; \
+    ptr_a[18] = ptr_b[18]; \
+    ptr_a[19] = ptr_b[19]; \
+    ptr_a[20] = ptr_b[20]; \
+    ptr_a[21] = ptr_b[21]; \
+    ptr_a[22] = ptr_b[22]; \
+    ptr_a[23] = ptr_b[23]; \
+    ptr_a[24] = ptr_b[24]; \
+    ptr_a[25] = ptr_b[25]; \
+}
+
+// Online suffix automaton construction algorithm
 void extend(int c) {
     int p = last;
-    int np = ++nodes_top;
-    f[np] = 1;
+    int cur = ++nodes_top;
+    
+    maxlen[cur] = maxlen[p] + 1;
 
-    nodes[np].maxlen = nodes[p].maxlen + 1;
-
-    while(p && !nodes[p].child[c]) {
-        nodes[p].child[c] = np;
-        p = nodes[p].parent;
+    while(p && !child[p][c]) {
+        child[p][c] = cur;
+        p = parent[p];
     }
 
     if(!p) {
-        nodes[np].parent = 1;
+        parent[cur] = 1;
     } else {
-        int q = nodes[p].child[c];
-        if(nodes[q].maxlen == nodes[p].maxlen + 1) {
-            nodes[np].parent = q;
+        int q = child[p][c];
+        if(maxlen[q] == maxlen[p] + 1) {
+            parent[cur] = q;
         } else {
             int nq = ++nodes_top;
-            nodes[nq] = nodes[q], nodes[nq].maxlen = nodes[p].maxlen + 1;
-            nodes[q].parent = nodes[np].parent = nq;
-            while(p && nodes[p].child[c] == q) {
-                nodes[p].child[c] = nq;
-                p = nodes[p].parent;
+            copy_child(child[nq], child[q]);
+            parent[nq] = parent[q];
+            maxlen[nq] = maxlen[p] + 1;
+            parent[cur] = nq;
+            parent[q] = nq;
+            while(p && child[p][c] == q) {
+                child[p][c] = nq;
+                p = parent[p];
             }
         }
     }
-    last = np;
+    last = cur;
 }
-
-int64_t ans;
-int head[N];
-int ver[N];
-int nxt[N];
-int idx = 1;
-
-void add(int a, int b) {
-    ver[++idx] = b;
-    nxt[idx] = head[a];
-    head[a] = idx;
-}
-
-
-void dfs(int x) {
-    for(int i = head[x]; i; i = nxt[i]) {
-        dfs(ver[i]);
-        f[x] += f[ver[i]];
-    }
-
-    if(f[x] > 1) {
-        ans = max(ans, f[x] * nodes[x].maxlen);
-    }
-}
-
+/***************** Suffix Automaton Construction End *****************/
 
 int main() {
-    string str;
-    cin >> str;
+    string str = "aabab";
 
     for(char ch : str) {
         extend(ch - 'a');
     }
 
-    for(int i = 2; i <= nodes_top; ++i) {
-        add(nodes[i].parent, i);
+    for(int i = 1; i <= nodes_top; ++i) {
+        printf("\"Node %d\" : {\n", i);
+        printf("\t\"Max Substring Length\" : %d\n", maxlen[i]);
+        printf("\t\"Parent Node\" : %d\n", parent[i]);
+        printf("\t\"Child Nodes\" : {\n");
+        for(int j = 0; j < 26; ++j) {
+            if(child[i][j]) {
+                printf("\t\t%c -> %d\n", 'a' + j, child[i][j]);
+            }
+        }
+        printf("\t}\n");
+        printf("}\n\n");
     }
-    dfs(1);
-    cout << ans << "\n";
+
     return 0;
 }
