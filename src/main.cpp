@@ -1,5 +1,9 @@
 #include<bits/stdc++.h>
 using namespace std;
+
+#pragma GCC optimize("O2,unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+
 static int _ = [](){
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
