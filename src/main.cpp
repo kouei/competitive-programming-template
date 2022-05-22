@@ -11,12 +11,25 @@ static int _ = [](){
     return 0;
 }();
 
+using i64 = int64_t;
+
+void merge(int l1, int r1, int l2, int r2, int & l, int & r) {
+    assert(r1 <= l2 || r2 <= l1);
+    l = min(l1, l2);
+    r = max(r1, r2);
+}
+
 int main() {
-    int T;
-    cin >> T;
-    for(auto tc = 1; tc <= T; ++tc) {
-        // TODO: Add your code here.
-        cout << "Case #" << tc << ": ";
+    int N;
+    cin >> N;
+    int l = 1;
+    int r = 1;
+
+    for(int i = 2; i <= N; ++i) {
+        merge(l, r, i, i, l, r);
+        merge(l, r, l + i, r + i, l, r);
     }
+
+    cout << l << " " << r << "\n";
     return 0;
 }
