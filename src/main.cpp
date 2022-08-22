@@ -11,12 +11,16 @@ static int _ = [](){
     return 0;
 }();
 
+void run_case(int case_number) {
+    // TODO: Add your code here.
+    cout << "Case #" << case_number << ": ";
+}
+
 int main() {
     int T;
     cin >> T;
     for(auto tc = 1; tc <= T; ++tc) {
-        // TODO: Add your code here.
-        cout << "Case #" << tc << ": ";
+        run_case(tc);
     }
     return 0;
 }
