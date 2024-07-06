@@ -11,9 +11,16 @@ int rand(int start, int end) {
 
 int main(int argc, char* argv[]) {
     int n = 5;
+    vector<int> v;
     for(int i = 0; i < n; ++i) {
         int x = rand(1, 10);
-        printf("%d ", x);
+        v.push_back(x);
     }
+
+    sort(v.begin(), v.end());
+    for(int i : v) {
+        printf("%d ", i);
+    }
+    
     puts("");
 }
