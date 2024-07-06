@@ -1,4 +1,4 @@
 bin/
 test/bin/*
 test/out/*
-.vscode/*
+**/.vscode
