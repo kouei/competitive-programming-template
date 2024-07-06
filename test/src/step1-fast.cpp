@@ -20,7 +20,17 @@ struct Monster {
         hp = max(0, hp - 1);
     }
 
-    bool operator< (const Monster & rhs) const { return hp < rhs.hp; }
+    bool operator< (const Monster & rhs) const {
+        if (is_aoe_triggered != rhs.is_aoe_triggered) {
+            return !is_aoe_triggered;
+        }
+
+        if (hp != rhs.hp) {
+            return hp < rhs.hp;
+        }
+
+        return hp - max_hp / 2 < rhs.hp - rhs.max_hp / 2;
+    }
 };
 
 vector<Monster> init_monters;
