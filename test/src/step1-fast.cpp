@@ -12,6 +12,7 @@ static int _ = [](){
 }();
 
 struct Monster {
+    int max_hp;
     int hp;
     bool is_aoe_triggered;
 
@@ -52,7 +53,7 @@ bool trigger_aoe(vector<Monster> & monsters, bool is_print = false) {
             continue;
         }
 
-        if (monsters[i].hp > init_monters[i].hp / 2) {
+        if (monsters[i].hp > monsters[i].max_hp / 2) {
             continue;
         }
 
@@ -88,9 +89,10 @@ int solve() {
     sort(monsters.begin(), monsters.end());
 
     for(size_t i = 0; i < monsters.size(); ++i) {
-        if(monsters[i].hp > init_monters[i].hp / 2) {
-            min_step += monsters[i].hp - init_monters[i].hp / 2;
-            monsters[i].hp = init_monters[i].hp / 2;
+        int bar = monsters[i].max_hp / 2;
+        if(monsters[i].hp > bar) {
+            min_step += monsters[i].hp - bar;
+            monsters[i].hp = bar;
         }
 
         while(trigger_aoe(monsters)) {}
@@ -107,13 +109,13 @@ int main() {
     while (true) {
         int hp;
         if (cin >> hp) {
-            init_monters.push_back({hp, false});
+            init_monters.push_back({hp, hp, false});
         } else {
             break;
         }
     }
 
     int min_step = solve();
-    cout << "Min Step = " << min_step << "\n\n";
+    cout << min_step << "\n\n";
     return 0;
 }
