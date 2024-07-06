@@ -124,6 +124,7 @@ int main() {
     auto min_step = get<0>(result);
     auto min_history = move(get<1>(result));
 
+#if false
     cout << "Min Step = " << min_step << "\n\n";
 
     cout << "Init Monsters:" << "\n";
@@ -151,6 +152,9 @@ int main() {
 
         cout << "\n";
     }
+#else
+    cout << min_step << "\n\n";
+#endif
 
     return 0;
 }
