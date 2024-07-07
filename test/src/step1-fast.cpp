@@ -25,10 +25,6 @@ struct Monster {
             return !is_aoe_triggered;
         }
 
-        if (hp != rhs.hp) {
-            return hp < rhs.hp;
-        }
-
         return hp - max_hp / 2 < rhs.hp - rhs.max_hp / 2;
     }
 };
