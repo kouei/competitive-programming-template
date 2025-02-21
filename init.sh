@@ -1,17 +1,17 @@
 #!/bin/bash
 
 ks_build_release() {
-    set -x # Print out commands being executed
+    set -x # Trace commands being executed
     mkdir -p bin
     g++ src/main.cpp -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o bin/main_release
-    set +x
+    set +x # Turn off command trace
 }
 
 ks_build_debug() {
-    set -x
+    set -x # Trace commands being executed
     mkdir -p bin
     g++ src/main.cpp -std=c++17 -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG -g -o bin/main_debug 
-    set +x
+    set +x # Turn off command trace
 }
 
 ks_run_release() {
@@ -23,12 +23,12 @@ ks_run_debug() {
 }
 
 ks_test_build() {
-    set -x
+    set -x # Trace commands being executed
     mkdir -p test/bin
     g++ test/src/step0-gen.cpp -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o test/bin/bin0-gen && \
     g++ test/src/step1-fast.cpp -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o test/bin/bin1-fast && \
     g++ test/src/step2-slow.cpp -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o test/bin/bin2-slow
-    set +x
+    set +x # Turn off command trace
 }
 
 ks_test_run() {
