@@ -43,7 +43,7 @@ ks_test_run() {
         test/bin/bin0-gen > test/out/out0-gen-input.txt
         test/bin/bin1-fast < test/out/out0-gen-input.txt > test/out/out1-fast-output.txt
         test/bin/bin2-slow < test/out/out0-gen-input.txt > test/out/out2-slow-output.txt
-        diff -wy --suppress-common-lines test/out/out1-fast-output.txt test/out/out2-slow-output.txt > test/out/out3-diff-output.txt
+        diff --ignore-all-space --side-by-side --suppress-common-lines test/out/out1-fast-output.txt test/out/out2-slow-output.txt > test/out/out3-diff-output.txt
         if [ $? -eq 0 ]
         then
             echo "Test $i: ${green}PASSED${reset}"
