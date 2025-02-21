@@ -70,49 +70,54 @@ bool trigger_aoe(vector<Monster> & monsters, bool is_print = false) {
     return false;
 }
 
-int solve(vector<int>& a) {
-    int n = a.size();
-    if (n == 0) return 0;
-    vector<pair<int, int>> enemies;
-    for (int x : a) {
-        int h = x / 2;
-        enemies.emplace_back(h, x);
+int solve() {
+
+    vector<int> index;
+    for(int i = 0; i < (int)init_monters.size(); ++i) {
+        index.push_back(i);
     }
-    sort(enemies.begin(), enemies.end(), [](const pair<int, int>& a_, const pair<int, int>& b_) {
-        return a_.first > b_.first;
-    });
-    
-    int k = 0;
-    long long sum_x = 0;
-    vector<int> xs(n);
-    for (int i = 0; i < n; ++i) {
-        int h_i = enemies[i].first;
-        xs[i] = max(0, h_i - k);
-        sum_x += xs[i];
-        k++;
-    }
-    for (int i = 0; i < n; ++i) {
-        int total = xs[i] + k;
-        int a_i = enemies[i].second;
-        if (total < a_i) {
-            sum_x += a_i - total;
+
+    int min_step = INT_MAX;
+    do {
+        int step = 0;
+        auto monsters = init_monters;
+
+        for(int i : index) {
+            if(monsters[i].is_aoe_triggered) {
+                continue;
+            }
+
+            if(monsters[i].hp <= monsters[i].max_hp / 2) {
+                continue;
+            }
+
+            step += monsters[i].hp - monsters[i].max_hp / 2;
+            monsters[i].hp = monsters[i].max_hp / 2;
+
+            while(trigger_aoe(monsters)) {}
         }
-    }
-    return sum_x;
+
+        for(const auto & m : monsters) {
+            step += m.hp;
+        }
+
+        min_step = min(min_step, step);
+    } while(next_permutation(index.begin(), index.end()));
+
+    return min_step;
 }
 
 int main() {
-    vector<int> v;
     while (true) {
         int hp;
         if (cin >> hp) {
-            v.push_back(hp);
+            init_monters.push_back({hp, hp, false});
         } else {
             break;
         }
     }
 
-    int min_step = solve(v);
+    int min_step = solve();
     cout << min_step << "\n\n";
     
     return 0;

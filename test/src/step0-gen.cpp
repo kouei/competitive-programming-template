@@ -10,7 +10,7 @@ int rand(int start, int end) {
 }
 
 int main(int argc, char* argv[]) {
-    int n = 5;
+    int n = 10;
     vector<int> v;
     for(int i = 0; i < n; ++i) {
         int x = rand(1, 10);

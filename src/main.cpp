@@ -11,16 +11,56 @@ static int _ = [](){
     return 0;
 }();
 
-void run_case(int case_number) {
-    // TODO: Add your code here.
-    cout << "Case #" << case_number << ": ";
+struct Monster {
+    int max_hp;
+    int cur_hp;
+};
+
+vector<Monster> monsters;
+
+int solve() {
+    int n = static_cast<int>(monsters.size());
+
+    int res = 0;
+    for(auto & m : monsters) {
+        if (m.cur_hp > n) {
+            res += m.cur_hp - n;
+            m.cur_hp = n;
+        }
+    }
+
+    auto is_less = [](Monster a, Monster b) {
+        int half_a_dis = a.cur_hp - a.max_hp / 2;
+        int half_b_dis = b.cur_hp - b.max_hp / 2;
+        return half_a_dis < half_b_dis;
+    };
+
+    std::sort(monsters.begin(), monsters.end(), is_less);
+
+    int aoe = 0;
+    for(auto & m : monsters) {
+        m.cur_hp -= aoe;
+        if(m.cur_hp > m.max_hp / 2) {
+            res += m.cur_hp - m.max_hp / 2;
+        }
+
+        aoe += 1;
+    }
+
+    return res;
 }
 
 int main() {
-    int T;
-    cin >> T;
-    for(auto tc = 1; tc <= T; ++tc) {
-        run_case(tc);
+    while (true) {
+        int hp;
+        if (cin >> hp) {
+            monsters.push_back({hp, hp});
+        } else {
+            break;
+        }
     }
+
+    int res = solve();
+    cout << res << "\n\n";
     return 0;
 }

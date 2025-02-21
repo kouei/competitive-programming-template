@@ -13,115 +13,54 @@ static int _ = [](){
 
 struct Monster {
     int max_hp;
-    int hp;
-    bool is_aoe_triggered;
-
-    void decrease_hp() {
-        hp = max(0, hp - 1);
-    }
-
-    bool operator< (const Monster & rhs) const {
-        if (is_aoe_triggered != rhs.is_aoe_triggered) {
-            return !is_aoe_triggered;
-        }
-
-        return hp - max_hp / 2 < rhs.hp - rhs.max_hp / 2;
-    }
+    int cur_hp;
 };
 
-vector<Monster> init_monters;
-
-bool is_all_monsters_dead(const vector<Monster> & monsters) {
-    for(auto m : monsters) {
-        if(m.hp > 0) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-void print_monsters(const vector<Monster> & monsters, int pos = -1, char left = '[', char right = ']') {
-    for(int i = 0; i < (int)monsters.size(); ++i) {
-        if(i == pos) {
-            cout << left << monsters[i].hp << right << " ";
-        } else {
-            cout << monsters[i].hp << " ";
-        }
-    }
-
-    cout << "\n";
-}
-
-bool trigger_aoe(vector<Monster> & monsters, bool is_print = false) {
-    for(size_t i = 0; i < monsters.size(); ++i) {
-        if (monsters[i].is_aoe_triggered) {
-            continue;
-        }
-
-        if (monsters[i].hp > monsters[i].max_hp / 2) {
-            continue;
-        }
-
-        if(is_print) {
-            print_monsters(monsters, (int)i, '(', ')');
-        }
-
-        monsters[i].is_aoe_triggered = true;
-
-        for(auto & m : monsters) m.decrease_hp();
-
-
-        return true;
-    }
-
-    return false;
-}
+vector<Monster> monsters;
 
 int solve() {
-    int n = (int)init_monters.size();
-    auto monsters = init_monters;
-    
-    int min_step = 0;
+    int n = static_cast<int>(monsters.size());
+
+    int res = 0;
     for(auto & m : monsters) {
-        if (m.hp > n) {
-            min_step += m.hp - n;
-            m.hp = n;
+        if (m.cur_hp > n) {
+            res += m.cur_hp - n;
+            m.cur_hp = n;
         }
     }
 
-    while(trigger_aoe(monsters)) {}
+    auto is_less = [](Monster a, Monster b) {
+        int half_a_dis = a.cur_hp - a.max_hp / 2;
+        int half_b_dis = b.cur_hp - b.max_hp / 2;
+        return half_a_dis < half_b_dis;
+    };
 
-    sort(monsters.begin(), monsters.end());
+    std::sort(monsters.begin(), monsters.end(), is_less);
 
-    for(size_t i = 0; i < monsters.size(); ++i) {
-        int bar = monsters[i].max_hp / 2;
-        if(monsters[i].hp > bar) {
-            min_step += monsters[i].hp - bar;
-            monsters[i].hp = bar;
+    int aoe = 0;
+    for(auto & m : monsters) {
+        m.cur_hp -= aoe;
+        if(m.cur_hp > m.max_hp / 2) {
+            res += m.cur_hp - m.max_hp / 2;
         }
 
-        while(trigger_aoe(monsters)) {}
+        aoe += 1;
     }
 
-    for(auto & m : monsters) {
-        min_step += m.hp;
-    }
-
-    return min_step;
+    return res;
 }
 
 int main() {
     while (true) {
         int hp;
         if (cin >> hp) {
-            init_monters.push_back({hp, hp, false});
+            monsters.push_back({hp, hp});
         } else {
             break;
         }
     }
 
-    int min_step = solve();
-    cout << min_step << "\n\n";
+    int res = solve();
+    cout << res << "\n\n";
     return 0;
 }
