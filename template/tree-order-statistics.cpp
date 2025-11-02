@@ -21,7 +21,6 @@
 // along with this library; see the file COPYING3.  If not see
 // <http://www.gnu.org/licenses/>.
 
-
 // Copyright (C) 2004 Ami Tavory and Vladimir Dreizin, IBM-HRL.
 
 // Permission to use, copy, modify, sell, and distribute this software
@@ -58,18 +57,12 @@ using namespace __gnu_pbds;
 // statistics. Note that since the tree uses
 // tree_order_statistics_node_update as its update policy, then it
 // includes its methods by_order and order_of_key.
-typedef
-tree<
-  int,
-  null_type,
-  less<int>,
-  rb_tree_tag,
-  // This policy updates nodes' metadata for order statistics.
-  tree_order_statistics_node_update>
-set_t;
+typedef tree<int, null_type, less<int>, rb_tree_tag,
+             // This policy updates nodes' metadata for order statistics.
+             tree_order_statistics_node_update>
+    set_t;
 
-int main()
-{
+int main() {
   // Insert some entries into s.
   set_t s;
   s.insert(12);
