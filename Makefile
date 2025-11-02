@@ -3,7 +3,8 @@ CPP_STD := -std=c++23
 CPP_FLAG := -g -O0 -Wall $(CPP_STD)
 MAIN_SRC := main.cpp
 ARCHIVE_SRC := archive/*
-ALL_SRC := $(MAIN_SRC) $(ARCHIVE_SRC)
+TEMPLATE_SRC := template/*
+ALL_SRC := $(MAIN_SRC) $(ARCHIVE_SRC) $(TEMPLATE_SRC)
 ARTIFACTS := main
 
 main: $(MAIN_SRC)
