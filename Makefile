@@ -9,6 +9,9 @@ SRC_FOLDER := src
 BINARY_FOLDER := bin
 BINARY_NAME := main
 
+INPUT_FOLDER := input
+INPUT_FILE := input.txt
+
 MAIN_SRC := $(SRC_FOLDER)/main.cpp
 ARCHIVE_SRC := archive/*
 TEMPLATE_SRC := template/*
@@ -26,7 +29,7 @@ release: $(MAIN_SRC)
 
 # @ can suppress echo of the command
 run:
-	@./$(BINARY_FOLDER)/$(BINARY_NAME) < $(SRC_FOLDER)/input.txt
+	@./$(BINARY_FOLDER)/$(BINARY_NAME) < $(INPUT_FOLDER)/$(INPUT_FILE)
 
 tidy:
 	clang-tidy $(ALL_SRC) -- $(CPP_STD)
