@@ -7,7 +7,7 @@ CPP_DEBUG_FLAG := -g -O0 $(CPP_STD) -Wshadow -Wall -fsanitize=address -fsanitize
 SRC_FOLDER := src
 
 BINARY_FOLDER := bin
-BINARY_NAME := main
+BINARY_FILE := main
 
 INPUT_FOLDER := input
 INPUT_FILE := input.txt
@@ -19,17 +19,17 @@ ALL_SRC := $(MAIN_SRC) $(ARCHIVE_SRC) $(TEMPLATE_SRC)
 ARTIFACTS := $(BINARY_FOLDER)/*
 
 debug: $(MAIN_SRC)
-	clang++ $(MAIN_SRC) $(CPP_DEBUG_FLAG) -o $(BINARY_FOLDER)/$(BINARY_NAME)
+	clang++ $(MAIN_SRC) $(CPP_DEBUG_FLAG) -o $(BINARY_FOLDER)/$(BINARY_FILE)
 
 release: $(MAIN_SRC)
-	clang++ $(MAIN_SRC) $(CPP_RELEASE_FLAG) -o $(BINARY_FOLDER)/$(BINARY_NAME)
+	clang++ $(MAIN_SRC) $(CPP_RELEASE_FLAG) -o $(BINARY_FOLDER)/$(BINARY_FILE)
 
 
 .PHONY: run clang-tidy clang-format clean
 
 # @ can suppress echo of the command
 run:
-	@./$(BINARY_FOLDER)/$(BINARY_NAME) < $(INPUT_FOLDER)/$(INPUT_FILE)
+	@./$(BINARY_FOLDER)/$(BINARY_FILE) < $(INPUT_FOLDER)/$(INPUT_FILE)
 
 tidy:
 	clang-tidy $(ALL_SRC) -- $(CPP_STD)
