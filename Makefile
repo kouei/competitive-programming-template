@@ -16,7 +16,12 @@ debug: $(MAIN_SRC)
 release: $(MAIN_SRC)
 	clang++ $(MAIN_SRC) $(CPP_RELEASE_FLAG) -o $@
 
-.PHONY: clang-tidy clang-format clean
+
+.PHONY: run clang-tidy clang-format clean
+
+# @ can suppress echo of the command
+run:
+	@./main < input.txt
 
 tidy:
 	clang-tidy $(ALL_SRC) -- $(CPP_STD)
