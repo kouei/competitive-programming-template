@@ -4,24 +4,25 @@ CPP_STD := -std=c++23
 CPP_RELEASE_FLAG := -O2 -Wno-unused-result -Wshadow -Wall
 CPP_DEBUG_FLAG := -g -O0 $(CPP_STD) -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG
 
-MAIN_SRC := main.cpp
+BINARY_NAME := main
+MAIN_SRC := src/main.cpp
 ARCHIVE_SRC := archive/*
 TEMPLATE_SRC := template/*
 ALL_SRC := $(MAIN_SRC) $(ARCHIVE_SRC) $(TEMPLATE_SRC)
-ARTIFACTS := main
+ARTIFACTS := bin/*
 
 debug: $(MAIN_SRC)
-	clang++ $(MAIN_SRC) $(CPP_DEBUG_FLAG) -o $@
+	clang++ $(MAIN_SRC) $(CPP_DEBUG_FLAG) -o bin/$(BINARY_NAME)
 
 release: $(MAIN_SRC)
-	clang++ $(MAIN_SRC) $(CPP_RELEASE_FLAG) -o $@
+	clang++ $(MAIN_SRC) $(CPP_RELEASE_FLAG) -o bin/$(BINARY_NAME)
 
 
 .PHONY: run clang-tidy clang-format clean
 
 # @ can suppress echo of the command
 run:
-	@./main < input.txt
+	@bin/main < input.txt
 
 tidy:
 	clang-tidy $(ALL_SRC) -- $(CPP_STD)
