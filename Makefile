@@ -22,7 +22,7 @@ release: $(MAIN_SRC)
 
 # @ can suppress echo of the command
 run:
-	@bin/main < input.txt
+	@./bin/main < src/input.txt
 
 tidy:
 	clang-tidy $(ALL_SRC) -- $(CPP_STD)
