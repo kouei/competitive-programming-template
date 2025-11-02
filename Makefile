@@ -31,10 +31,10 @@ run:
 	@./$(BINARY_FOLDER)/$(BINARY_FILE) < $(INPUT_FOLDER)/$(INPUT_FILE)
 
 tidy:
-	clang-tidy $(ALL_SRC) -- $(CPP_STD)
+	clang-tidy $(MAIN_SRC) -- $(CPP_STD)
 
 format:
-	clang-format -i $(ALL_SRC)
+	clang-format -i $(MAIN_SRC)
 
 prepare_folder:
 	mkdir -p $(BINARY_FOLDER)
