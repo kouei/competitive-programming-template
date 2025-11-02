@@ -2,25 +2,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
+std::default_random_engine
+    generator(std::chrono::system_clock::now().time_since_epoch().count());
 
 int rand(int start, int end) {
-    std::uniform_int_distribution<int> distribution(start, end);
-    return distribution(generator);
+  std::uniform_int_distribution<int> distribution(start, end);
+  return distribution(generator);
 }
 
-int main(int argc, char* argv[]) {
-    int n = 10;
-    vector<int> v;
-    for(int i = 0; i < n; ++i) {
-        int x = rand(1, 10);
-        v.push_back(x);
-    }
+int main(int argc, char *argv[]) {
+  int n = 10;
+  vector<int> v;
+  for (int i = 0; i < n; ++i) {
+    int x = rand(1, 10);
+    v.push_back(x);
+  }
 
-    sort(v.begin(), v.end());
-    for(int i : v) {
-        printf("%d ", i);
-    }
-    
-    puts("");
+  sort(v.begin(), v.end());
+  for (int i : v) {
+    printf("%d ", i);
+  }
+
+  puts("");
 }
