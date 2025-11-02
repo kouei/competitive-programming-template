@@ -1,19 +1,5 @@
 #!/bin/bash
 
-ks_build_release() {
-    set -x # Trace commands being executed
-    mkdir -p bin
-    g++ src/main.cpp -O2 -std=c++17 -Wno-unused-result -Wshadow -Wall -o bin/main_release
-    set +x # Turn off command trace
-}
-
-ks_build_debug() {
-    set -x # Trace commands being executed
-    mkdir -p bin
-    g++ src/main.cpp -O0 -std=c++17 -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG -g -o bin/main_debug 
-    set +x # Turn off command trace
-}
-
 ks_run_release() {
     bin/main_release < src/input.txt
 }
