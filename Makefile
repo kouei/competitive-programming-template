@@ -1,10 +1,8 @@
 
 CPP_STD := -std=c++23
 
-CPP_RELEASE_FLAG := -O2 -Wno-unused-result -Wshadow -Wall
+CPP_RELEASE_FLAG := -O2 $(CPP_STD) -Wno-unused-result -Wshadow -Wall
 CPP_DEBUG_FLAG := -g -O0 $(CPP_STD) -Wshadow -Wall -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG
-
-SRC_FOLDER := src
 
 BINARY_FOLDER := bin
 BINARY_FILE := main
@@ -12,6 +10,7 @@ BINARY_FILE := main
 INPUT_FOLDER := input
 INPUT_FILE := input.txt
 
+SRC_FOLDER := src
 MAIN_SRC := $(SRC_FOLDER)/main.cpp
 ARCHIVE_SRC := archive/*
 TEMPLATE_SRC := template/*
